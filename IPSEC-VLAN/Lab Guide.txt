@@ -1,0 +1,78 @@
+SPRINT 1 - INTERNET PROTOCOL SECURITY Site-to-Site - VPN
+INSTRUCTION_
+
+Given network:
+Champlain Public network: 216.93.144.0/24
+
+Champlain Private network: 172.16.84.0/24
+
+UVM Public network: 140.230.18.0/24
+
+UVM Private network: 192.168.25.0/24
+
+1. Network configuration
+Assign IP addresses to all routers and PCs
+
+Assign default routes on Champlain and UVM routers to point to ISP
+
+Champlain Router # ip route 0.0.0.0 0.0.0.0 216.93.144.15
+
+UVM Router # ip route 0.0.0.0 0.0.0.0 140.230.18.15
+
+Ping from Champlain Public IP to UVM Public IP for testing
+2. Configure Champlain Route
+From Config mode:
+#access-list number permit ip src_net src_mask_wildcard dst_net dst_mask_wildcard
+
+source network is Champlain private
+
+destination network is UVM private
+
+number can be any bumber above 100
+
+2.1. Configure IKE Phase 1 ISAKMP Policy on Champlain router
+
+From Config mode:
+#crypto isakmp policy 10
+
+#encryption aes 256
+
+#authentication pre-share
+
+#group 5
+
+#exit
+
+#crypto isakmp key CCC412 address public_ip_uvm_router
+
+2.2. Configure IKE Phase 2 IPSEC policy
+
+From Config mode:
+#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+#crypto map VPN-MAP 10 ipsec-isakmp
+
+#description VPN connection to UVM
+
+#set peer public_ip_uvm_router
+
+#set transform-set VPN-SET
+
+#match address 100
+
+#exit
+
+2.3. Configure crypto map on the outgoing interface
+
+From Config mode:
+#interface FastEthernet 0/0
+
+#crypto map VPN-MAP
+
+3. Configure UVM Router (do the same steps to configure Champlain router on the UVM router,
+make sure change the addresses and other settings)
+
+4. Verification
+Exit Config mode and run the command "crypto ipsec sa" to view SA set up correctly
+5. Ping between Champlain PCs and UVM PCs in both directions to generate some traffic
+6. IfVPN set up correctly, run the command "show crypto ipsec sa" to view encrypted packets
