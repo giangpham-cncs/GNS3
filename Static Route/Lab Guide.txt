@@ -1,0 +1,32 @@
+Static Route
+
+Given networks:
+Router 1: 192.168.10.0/24
+Router 2: 192.168.20.0/24
+Router 3: 192.168.30.0/24
+R1 to R2: 10.10.10.0/24
+R1 to R3: 10.10.20.0/24
+Router IP configuration
+Router>en
+Router#config t
+Router(config)#int s0/0 or int f0/0
+Router(config-if)#ip add 192.x.x.x 255.x.x.x
+no shut and exit
+VPC IP configuration
+PC> ip 192.x.x.x 255.x.x.x 192.x.x.x
+On Router 1
+Router(config)# ip route 192.168.20.0 255.255.255.0 10.10.10.55
+Router(config)# ip route 192.168.30.0 255.255.255.0 10.10.20.55
+On Router 2
+Router(config)# ip route 192.168.10.0 255.255.255.0 10.10.10.5
+Router(config)# ip route 192.168.30.0 255.255.255.0 10.10.10.5
+On Router 3
+Router(config)# ip route 192.168.10.0 255.255.255.0 10.10.20.5
+Router(config)# ip route 192.168.20.0 255.255.255.0 10.10.20.5
+Task 2: Add a new network (192.168.40.0/24)
+Add Router 4 and connect to Router 3
+Add Switch 4 and connect to Router 4
+Add PC7 and PC8, then connect them to Switch 4
+Assign an IP address and subnet to Router 4
+Assign IP address, subnet, and gateway to PC7, PC8
+Configure a static route on Router 4, make sure PC7 and PC8 can ping other PCs

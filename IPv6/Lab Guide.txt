@@ -1,0 +1,42 @@
+IPv6 Instruction
+Network:
+2620:E4:C000::/64 assigned prefix to Champlain College
+2001:1890:139D::/64 assigned prefix to Middlebury College
+1800:2200:185::/64 is the network used by the ISP, VTEL, to connect Champlain and Middlebury
+Step 1 - Configure the Champlain router
+Assign a General Prefix for the internal Champlain network
+From config mode: "ipv6 general-prefix [prefix_name] [champlain_ipv6_prefix]"
+prefix_name: CC_prep
+champlain_ipv6_prefix: 2620:E4:C000::/64
+Configure Ethernet0 with an IP address using the named general prefix, and make sure interface is not shut down
+From config mode: interface e0
+ipv6 address CC_prep ::0:0:0:1/64
+no shut
+Enable IPv6 local routing
+From config mode: ipv6 unicast-routing
+Step 2 - Configure Champlain host
+Use this command to auto-assign an IP address based on the local routers prefix and the host MAC address
+ip auto
+
+Test: ping 2620:E4:C000::1
+Step 3 - Configure the Middlebury router with prefix_name: MC_prep and IPv6_prefix from the Network
+Step 4 - Configure Middlebury host with the command "ip auto", and ping to Middlebury router for testing
+Step 5 - Configure VTEL router
+Enable IPv6 local routing
+From config mode: ipv6 unicast-routing
+Assign an IP address to Fa0 using the "eui" shortcut and make sure interface is not shut down
+From config mode: interface fa0
+ipv6 address [vtel_ipv6_prefix] eui-64
+no shut
+Step 6 - Configure Champlain router and Middlebury router ISP interface to get IPv6 address
+On both routers
+From config mode: interface fa0
+ipv6 address autoconfig
+no shut
+Use "show ipv6 interface brief" and ping for testing
+Step 7 - Configure IPv6 RIP so that routers are broadcast
+On all 3 routers, and each interface using IPv6, enable RIP with process number
+From config mode: interface fa0/e0
+ipv6 rip processX enable (X can be any number but "1" is common)
+Exit config mode, and run the command "show ipv6 route" to see all networks
+From Champlain host, ping to Middlebury host for testing

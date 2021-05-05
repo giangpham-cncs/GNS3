@@ -1,0 +1,55 @@
+Basic BGP
+-------------------------------------INSTRUCTION--------------------------------
+
+Given network:
+Champlain network: 192.168.1.0/24
+Champlain AS: 65300
+Middlebury network: 192.168.2.0/24
+Middlebury AS: 65400
+CC-Router
+Under config mode
+int f0/1
+ip address 192.168.1.5 255.255.255.0
+no shut
+router bgp 65300
+neighbor 192.168.1.1 remote-as 65300
+Champlain-Router
+Under config mode
+int f0/0
+ip address 10.0.0.1 255.255.255.255
+no shut
+int f0/1
+ip address 192.168.1.1 255.255.255.0
+no shut
+router bgp 65300
+neighbor 10.0.0.2 remote-as 65400
+neighbor 192.168.1.5 remote-as 65300
+network 192.168.1.0 mask 255.255.255.0
+neighbor 192.168.1.5 next-hop-self
+Middlebury-Router
+Under config mode
+int f0/0
+ip address 10.0.0.2 255.255.255.255
+no shut
+int f0/1
+ip address 192.168.2.1 255.255.255.0
+no shut
+router bgp 65400
+neighbor 10.0.0.1 remote-as 65300
+neighbor 192.168.2.5 remote-as 65400
+network 192.168.2.0 mask 255.255.255.0
+neighbor 192.168.2.5 next-hop-self
+MC-Router
+Under config mode
+int f0/1
+ip address 192.168.2.5 255.255.255.0
+no shut
+router bgp 65400
+neighbor 192.168.2.1 remote-as 65400
+On Champlain-Router and Middlebury-Router run the command to see bgp configuration:
+
+show ip bgp neighbors
+On CC-Router and MC-Router, run the command to show ip route:
+
+show ip router
+Ping from CC-Router to MC-Router for tesing
